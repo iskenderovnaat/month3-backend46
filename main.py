@@ -14,7 +14,7 @@ dp = Dispatcher()
 @dp.message(Command(commands=['start']))
 async def start_handler(message):
     name = message.from_user.first_name
-    await message.answer(f"Добро {name} пожаловать на бот geeksback,этот бот был создан для изучения создавания ботов!")
+    await message.answer(f"Добро  пожаловать {name} на бот geeksback,этот бот был создан для изучения создавания ботов!")
 
 
 
