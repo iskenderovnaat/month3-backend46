@@ -13,24 +13,24 @@ async def start_handler(message: types.Message):
             [
                 types.InlineKeyboardButton(
                     text="Наш сайт",
-                    url="https://dodopizza.kg/bishkek"
+                    url="https://mypizza.kg/"
                 ),
                 types.InlineKeyboardButton(
                     text="Наш инстаграм",
-                    url="https://www.instagram.com/dodopizzakg/profilecard/?igsh=eGY5NXg5a2ZvcWFn"
+                    url="https://www.instagram.com/mypizzakg/"
                 )
             ],
             [
                 types.InlineKeyboardButton(
                     text="Вопросы, Отзывы",
-                    url="mailto:feedback@dodopizza.kg"
+                    url="https://mypizza.kg/"
                 )
 
             ],
             [
                 types.InlineKeyboardButton(
                     text="О нас",
-                    callback_data="aboutus"
+                    callback_data="about_us"
                 ),
                 types.InlineKeyboardButton(
                     text="Наши контакты",
@@ -39,44 +39,43 @@ async def start_handler(message: types.Message):
             ],
             [
                 types.InlineKeyboardButton(
-                    text="Адреса ресторанов",
+                    text="Адреса империи пиццы",
                     callback_data="location"
                 )
             ],
             [
                 types.InlineKeyboardButton(
                     text="Вакансии",
-                    callback_data="vacancy"
+                    callback_data="vacancies"
                 )
             ]
         ]
     )
     await message.reply(
-        f"Доброго времени суток, {name}. Добро пожаловать в наш бот пиццерии",
+        f"Приветствуем, {name}. Добро пожаловать в наш бот пиццерии",
         reply_markup=kb
     )
 
 
-@start_router.callback_query(F.data == "aboutus")
+@start_router.callback_query(F.data == "about_us")
 async def about_us_handler(callback: types.CallbackQuery):
-    text = "вкус на весь день."
+    text = "Выбирайте пиццу на свой вкус! \
+В «Империи Пиццы» есть все виды пиццы на любой вкус! Мы учитываем предпочтение каждого клиента"
     await callback.message.answer(text)
 
 
 @start_router.callback_query(F.data == "phone")
 async def phone_handler(callback: types.CallbackQuery):
-    text = "Наши контакты:\n0(772) 550 550\n0(551) 550 590"
+    text = "Наши контакты:0(551) 510 707"
     await callback.message.answer(text)
 
 
 @start_router.callback_query(F.data == "location")
 async def location_handler(callback: types.CallbackQuery):
-    text = "Адреса пиццерии:\n1. мкрн.6, 5/1\n2. пр-т Чуйский, 32Б\n3. пр-т Манаса, 7"
+    text = "Адреса пиццерии:\n1. ул.Горького, 27, \n2. пр-т Чуйский,114\n3. ул.Исы Ахунбаева, 173/1"
     await callback.message.answer(text)
 
-
-
-@start_router.callback_query(F.data == "vacancy")
-async def vacancy_handler(callback: types.CallbackQuery):
-    text = "Вакансии:\n1. Кассир\n2. Курьер\n3. Оператор:\nОтклик на вакансию можно оставить по телефону: 0(312) 550 550"
-    await callback.message.answer(text)
+@start_router.callback_query(F.data == "vacancies")
+async def vacancies_handler(callback: types.CallbackQuery):
+        text = "ВОЗРАСТ:17-25,должность: кассир ,зп 20000с-30000с,по всем вопросам обращаться по этому номеру:0706897899"
+        await callback.message.answer(text)
