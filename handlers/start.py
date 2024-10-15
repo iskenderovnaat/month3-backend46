@@ -20,13 +20,7 @@ async def start_handler(message: types.Message):
                     url="https://www.instagram.com/mypizzakg/"
                 )
             ],
-            [
-                types.InlineKeyboardButton(
-                    text="Вопросы, Отзывы",
-                    url="https://mypizza.kg/"
-                )
 
-            ],
             [
                 types.InlineKeyboardButton(
                     text="О нас",
@@ -48,9 +42,16 @@ async def start_handler(message: types.Message):
                     text="Вакансии",
                     callback_data="vacancies"
                 )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text="Оставить отзыв",
+                    callback_data="feedback"
+                )
             ]
         ]
     )
+
     await message.reply(
         f"Приветствуем, {name}. Добро пожаловать в наш бот пиццерии",
         reply_markup=kb
