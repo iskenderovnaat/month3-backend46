@@ -24,18 +24,21 @@ async def start_review(call: types.CallbackQuery, state: FSMContext):
 
 @reviewdialog_router.message(RestourantReview.name)
 async def review_name(message: types.Message, state: FSMContext):
+    await state.update_data(name=message.text)
     await message.answer("Введите ваш номер телефона")
     await state.set_state(RestourantReview.phone_number)
 
 
 @reviewdialog_router.message(RestourantReview.phone_number)
 async def review_phone_number(message: types.Message, state: FSMContext):
+    await state.update_data(phone_number=message.text)
     await message.answer("Укажите дату вашего последнего визита (Д/М/Г)")
     await state.set_state(RestourantReview.visit_date)
 
 
 @reviewdialog_router.message(RestourantReview.visit_date)
 async def review_visit_date(message: types.Message, state: FSMContext):
+    await state.update_data(visit_date=message.text)
     kb = types.ReplyKeyboardMarkup(
         keyboard=[
             [
@@ -51,6 +54,7 @@ async def review_visit_date(message: types.Message, state: FSMContext):
 
 @reviewdialog_router.message(RestourantReview.food_rating)
 async def review_food_rating(message: types.Message, state: FSMContext):
+    await state.update_data(food_rating=message.text)
     kb = types.ReplyKeyboardMarkup(
         keyboard=[
             [
@@ -66,11 +70,21 @@ async def review_food_rating(message: types.Message, state: FSMContext):
 
 @reviewdialog_router.message(RestourantReview.cleanliness_rating)
 async def review_cleanliness_rating(message: types.Message, state: FSMContext):
+    await state.update_data(cleanliness_rating=message.text)
     await message.answer("Оставьте ваши комментарии.", reply_markup=types.ReplyKeyboardRemove())
     await state.set_state(RestourantReview.extra_comments)
 
 
 @reviewdialog_router.message(RestourantReview.extra_comments)
 async def review_extra_comments(message: types.Message, state: FSMContext):
-    await message.answer("Спасибо за ваш отзыв! Все этапы завершены.")
+    await state.update_data(extra_comments=message.text)
+    user_data = await state.get_data()
+    await message.answer(f"Спасибо за ваш отзыв! Вот ваши данные:\n\n"
+                         f"Имя: {user_data['name']}\n"
+                         f"Телефон: {user_data['phone_number']}\n"
+                         f"Дата визита: {user_data['visit_date']}\n"
+                         f"Оценка блюд: {user_data['food_rating']}\n"
+                         f"Оценка чистоты: {user_data['cleanliness_rating']}\n"
+                         f"Комментарии: {user_data['extra_comments']}")
     await state.clear()
+
