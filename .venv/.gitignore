@@ -60,10 +60,6 @@ cover/
 *.pot
 
 # Django stuff:
-*.sqlite3
-*.sqlite3-journal
-*.sqlite
-*.sqlite-journal
 *.log
 local_settings.py
 db.sqlite3
@@ -129,7 +125,7 @@ celerybeat.pid
 
 # Environments
 .env
-Lesson/.venv
+.venv
 env/
 venv/
 ENV/

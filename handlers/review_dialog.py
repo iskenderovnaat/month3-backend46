@@ -1,7 +1,14 @@
+import sqlite3
+
 from aiogram import Router, F, types
 from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+from bot_config import Database
+
+review_router = Router()
+list_of_clients = []
+list_tg_ids = []
 
 
 class RestourantReview(StatesGroup):
@@ -13,78 +20,118 @@ class RestourantReview(StatesGroup):
     extra_comments = State()
 
 
-reviewdialog_router = Router()
+@review_router.callback_query(F.data == "review")
+async def review_handler(callback: types.CallbackQuery, state: FSMContext):
+    if callback.from_user.id in list_tg_ids:
+        await callback.message.answer("Вы уже проходили опрос!")
+        return
+    else:
+        list_tg_ids.append(callback.from_user.id)
 
-
-@reviewdialog_router.callback_query(F.data == "feedback")
-async def start_review(call: types.CallbackQuery, state: FSMContext):
     await state.set_state(RestourantReview.name)
-    await call.message.answer("Как вас зовут?")
+    await callback.message.answer("Как вас зовут?")
+    await callback.answer()
 
 
-@reviewdialog_router.message(RestourantReview.name)
+@review_router.message(RestourantReview.name)
 async def review_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
-    await message.answer("Введите ваш номер телефона")
     await state.set_state(RestourantReview.phone_number)
+    await message.answer("Введите ваш номер телефона")
 
 
-@reviewdialog_router.message(RestourantReview.phone_number)
+@review_router.message(RestourantReview.phone_number)
 async def review_phone_number(message: types.Message, state: FSMContext):
     await state.update_data(phone_number=message.text)
-    await message.answer("Укажите дату вашего последнего визита (Д/М/Г)")
     await state.set_state(RestourantReview.visit_date)
+    await message.answer("Дата посещения нашего заведения (Д/М/Г)")
 
 
-@reviewdialog_router.message(RestourantReview.visit_date)
+@review_router.message(RestourantReview.visit_date)
 async def review_visit_date(message: types.Message, state: FSMContext):
     await state.update_data(visit_date=message.text)
-    kb = types.ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                types.KeyboardButton(text="Отлично"),
-                types.KeyboardButton(text="Плохо"),
-            ]
-        ],
-        resize_keyboard=True,
-    )
-    await message.answer("Как вы оцениваете блюда?", reply_markup=kb)
     await state.set_state(RestourantReview.food_rating)
 
-
-@reviewdialog_router.message(RestourantReview.food_rating)
-async def review_food_rating(message: types.Message, state: FSMContext):
-    await state.update_data(food_rating=message.text)
     kb = types.ReplyKeyboardMarkup(
         keyboard=[
-            [
-                types.KeyboardButton(text="Отлично"),
-                types.KeyboardButton(text="Плохо"),
-            ]
+            [types.KeyboardButton(text="1"),
+             types.KeyboardButton(text="2"),
+             types.KeyboardButton(text="3"),
+             types.KeyboardButton(text="4"),
+             types.KeyboardButton(text="5")]
         ],
-        resize_keyboard=True,
+        resize_keyboard=True
     )
-    await message.answer("Оцените чистоту заведения", reply_markup=kb)
+    await message.answer("Оцените наше меню (от 1 до 5)", reply_markup=kb)
+
+
+@review_router.message(RestourantReview.food_rating)
+async def review_food_rating(message: types.Message, state: FSMContext):
+    try:
+        rating = int(message.text)
+        if rating < 1 or rating > 5:
+            raise ValueError
+    except ValueError:
+        await message.answer("Пожалуйста, введите число от 1 до 5.")
+        return
+
+    await state.update_data(food_rating=rating)
     await state.set_state(RestourantReview.cleanliness_rating)
 
+    kb = types.ReplyKeyboardMarkup(
+        keyboard=[
+            [types.KeyboardButton(text="1"),
+             types.KeyboardButton(text="2"),
+             types.KeyboardButton(text="3"),
+             types.KeyboardButton(text="4"),
+             types.KeyboardButton(text="5")]
+        ],
+        resize_keyboard=True
+    )
+    await message.answer("Оцените чистоту нашей пиццерии (от 1 до 5)", reply_markup=kb)
 
-@reviewdialog_router.message(RestourantReview.cleanliness_rating)
-async def review_cleanliness_rating(message: types.Message, state: FSMContext):
-    await state.update_data(cleanliness_rating=message.text)
-    await message.answer("Оставьте ваши комментарии.", reply_markup=types.ReplyKeyboardRemove())
+
+@review_router.message(RestourantReview.cleanliness_rating)
+async def cleanliness_rating(message: types.Message, state: FSMContext):
+    try:
+        rating = int(message.text)
+        if rating < 1 or rating > 5:
+            raise ValueError
+    except ValueError:
+        await message.answer("Пожалуйста, введите число от 1 до 5.")
+        return
+
+    await state.update_data(cleanliness_rating=rating)
     await state.set_state(RestourantReview.extra_comments)
+    await message.answer("Оставьте комментарий")
 
 
-@reviewdialog_router.message(RestourantReview.extra_comments)
-async def review_extra_comments(message: types.Message, state: FSMContext):
-    await state.update_data(extra_comments=message.text)
-    user_data = await state.get_data()
-    await message.answer(f"Спасибо за ваш отзыв! Вот ваши данные:\n\n"
-                         f"Имя: {user_data['name']}\n"
-                         f"Телефон: {user_data['phone_number']}\n"
-                         f"Дата визита: {user_data['visit_date']}\n"
-                         f"Оценка блюд: {user_data['food_rating']}\n"
-                         f"Оценка чистоты: {user_data['cleanliness_rating']}\n"
-                         f"Комментарии: {user_data['extra_comments']}")
+@review_router.message(RestourantReview.extra_comments)
+async def extra_comments(message: types.Message, state: FSMContext):
+    await state.update_data(review_extra_comments=message.text)
+
+    data = await state.get_data()
+    list_of_clients.append(data)
+    print(list_of_clients)
+    print(list_tg_ids)
+    tg_id = message.from_user.id
+
+    Database.execute(
+        query=("""
+            INSERT INTO survey_results 
+            (name, phone_number, visit_date, food_rating, cleanliness_rating, review_extra_comments, tg_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+            """),
+        params=(
+            data['name'],
+            data['phone_number'],
+            data['visit_date'],
+            data['food_rating'],
+            data['cleanliness_rating'],
+            data['review_extra_comments'],
+            tg_id
+        )
+    )
+
     await state.clear()
-
+    await message.answer("Спасибо за пройденный опрос!")

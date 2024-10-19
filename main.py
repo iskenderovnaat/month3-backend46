@@ -1,20 +1,28 @@
 import asyncio
 import logging
-from bot_config import bot, dp
+
 from handlers.start import start_router
 from handlers.other_msgs import other_messages
-from handlers.review_dialog import reviewdialog_router
+from handlers.review_dialog import review_router
+from bot_config import bot, dp, Database
+from aiogram import Bot
 
 
-
+async def on_startup():
+    print("База данных создалась.")
+    Database.create_table()
 
 
 async def main():
     dp.include_router(start_router)
-    dp.include_router(reviewdialog_router)
+    dp.include_router(review_router)
+
     dp.include_router(other_messages)
-    # запуск бота
+
+    dp.startup.register(on_startup)
+
     await dp.start_polling(bot)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

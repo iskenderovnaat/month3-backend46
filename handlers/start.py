@@ -1,82 +1,53 @@
-from aiogram import Router, F, types
-from aiogram.types import Message, InlineKeyboardMarkup
-from aiogram.filters.command import Command
+
+
+from aiogram import Router, types, F
+from aiogram.filters import Command
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
 
 start_router = Router()
+list_of_clients = []
+list_tg_ids = []
 
 
-@start_router.message(Command("start"))
+@start_router.message(Command(commands=['start']))
 async def start_handler(message: types.Message):
     name = message.from_user.first_name
-    kb = types.InlineKeyboardMarkup(
+
+    keyboard = types.InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                types.InlineKeyboardButton(
-                    text="Наш сайт",
-                    url="https://mypizza.kg/"
-                ),
-                types.InlineKeyboardButton(
-                    text="Наш инстаграм",
-                    url="https://www.instagram.com/mypizzakg/"
-                )
-            ],
-
-            [
-                types.InlineKeyboardButton(
-                    text="О нас",
-                    callback_data="about_us"
-                ),
-                types.InlineKeyboardButton(
-                    text="Наши контакты",
-                    callback_data="phone"
-                )
+                types.InlineKeyboardButton(text="Наш сайт", url="https://mypizza.kg/ru/mypizza/menu/4376"),
+                types.InlineKeyboardButton(text="Наш инстаграм", url="https://www.instagram.com/mypizzakg/")
             ],
             [
-                types.InlineKeyboardButton(
-                    text="Адреса империи пиццы",
-                    callback_data="location"
-                )
+                types.InlineKeyboardButton(text="О нас", callback_data="about_us")
             ],
             [
-                types.InlineKeyboardButton(
-                    text="Вакансии",
-                    callback_data="vacancies"
-                )
+                types.InlineKeyboardButton(text="Наш адрес",
+                                           url="https://2gis.kg/bishkek/branches/70000001019359418")
             ],
             [
-                types.InlineKeyboardButton(
-                    text="Оставить отзыв",
-                    callback_data="feedback"
-                )
+                types.InlineKeyboardButton(text="Вакансии", callback_data="vacancies")
+            ],
+            [
+                types.InlineKeyboardButton(text="Оставить отзыв", callback_data="review")
             ]
         ]
     )
 
-    await message.reply(
-        f"Приветствуем, {name}. Добро пожаловать в наш бот пиццерии",
-        reply_markup=kb
-    )
+    await message.answer(f"Приветствуем, {name}, в бот пиццерии! Этот бот был создан для вашего удобства.",
+                         reply_markup=keyboard)
 
 
 @start_router.callback_query(F.data == "about_us")
 async def about_us_handler(callback: types.CallbackQuery):
-    text = "Выбирайте пиццу на свой вкус! \
-В «Империи Пиццы» есть все виды пиццы на любой вкус! Мы учитываем предпочтение каждого клиента"
+    text = ("Выбирайте пиццу на свой вкус! В «Империи Пиццы» есть все виды пиццы на любой вкус! Мы учитываем предпочтение каждого клиента")
     await callback.message.answer(text)
 
-
-@start_router.callback_query(F.data == "phone")
-async def phone_handler(callback: types.CallbackQuery):
-    text = "Наши контакты:0(551) 510 707"
-    await callback.message.answer(text)
-
-
-@start_router.callback_query(F.data == "location")
-async def location_handler(callback: types.CallbackQuery):
-    text = "Адреса пиццерии:\n1. ул.Горького, 27, \n2. пр-т Чуйский,114\n3. ул.Исы Ахунбаева, 173/1"
-    await callback.message.answer(text)
 
 @start_router.callback_query(F.data == "vacancies")
 async def vacancies_handler(callback: types.CallbackQuery):
-        text = "ВОЗРАСТ:17-25,должность: кассир ,зп 20000с-30000с,по всем вопросам обращаться по этому номеру:0706897899"
-        await callback.message.answer(text)
+    text = ("Возраст - от 18 до 23 лет.\nЗарплата - от 30000р до 40000р.\nДолжность - кассир.\n"
+            "Телефон - +996 709819018.")
+    await callback.message.answer(text)
