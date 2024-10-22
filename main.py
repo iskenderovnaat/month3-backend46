@@ -4,13 +4,13 @@ import logging
 from handlers.start import start_router
 from handlers.other_msgs import other_messages
 from handlers.review_dialog import review_router
-from bot_config import bot, dp, Database
+from bot_config import bot, dp, database
 from aiogram import Bot
 
 
 async def on_startup():
     print("База данных создалась.")
-    Database.create_table()
+    database.create_table()
 
 
 async def main():

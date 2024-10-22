@@ -14,8 +14,8 @@ class Database:
                     name TEXT,
                     phone_number TEXT,  
                     visit_date TEXT,    
-                    food_rating TEXT,
-                    cleanliness_rating TEXT,
+                    food_rating INTEGER,
+                    cleanliness_rating INTEGER,
                     review_extra_comments TEXT,
                     tg_id INTEGER
                 )
