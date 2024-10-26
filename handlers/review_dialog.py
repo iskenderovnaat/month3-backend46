@@ -118,7 +118,7 @@ async def extra_comments(message: types.Message, state: FSMContext):
 
     database.execute(
         query=("""
-            INSERT INTO survey_results 
+            INSERT INTO rewiews
             (name, phone_number, visit_date, food_rating, cleanliness_rating, review_extra_comments, tg_id)
     VALUES (?, ?, ?, ?, ?, ?, ?)
             """),
