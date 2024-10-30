@@ -10,12 +10,9 @@ class Database:
         with sqlite3.connect(self.path) as connection:
             cursor = connection.cursor()
 
-            cursor.execute("""
-                          CREATE TABLE IF NOT EXISTS users_id  (
-                              id INTEGER PRIMARY KEY AUTOINCREMENT,
-                              user_id INTEGER
-                          )
-                      """)
+
+
+
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS rewiews (
@@ -29,6 +26,20 @@ class Database:
                     tg_id INTEGER
                 )
             """)
+
+            cursor.execute("""
+                                    CREATE TABLE IF NOT EXISTS users_id  (
+                                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        user_id INTEGER
+                                    )
+                                """)
+
+            connection.execute("""
+                                            CREATE TABLE IF NOT EXISTS categories(
+                                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            category_name TEXT UNIQUE
+                                            )
+                                            """)
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS dishes  (

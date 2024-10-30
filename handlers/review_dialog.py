@@ -28,7 +28,7 @@ async def review_handler(callback: types.CallbackQuery, state: FSMContext):
     )
     print(user_tg_id)
     if len(user_tg_id) == 0:
-        await callback.message.answer("Вы уже проходили опрос!")
+        await callback.message.answer("Вы уже прошли опрос!")
         return
 
 

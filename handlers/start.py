@@ -15,8 +15,8 @@ async def start_handler(message: types.Message):
     user_summ = database.fetch("SELECT DISTINCT user_id FROM users_id")
     summ = len(user_summ)
 
-    await message.answer(f"Доброго времени суток {name}.\n"
-                         f"На данный момент в боте зарегистрировано {summ} пользователей")
+    await message.answer(f"ПРИВЕТСТВУЮ {name}.\n"
+                         f"Сейчас в боте зарегистрировано {summ}  человек")
 
     keyboard = types.InlineKeyboardMarkup(
         inline_keyboard=[
