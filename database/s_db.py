@@ -4,9 +4,19 @@ class Database:
     def __init__(self, path: str):
         self.path = path
 
+
+
     def create_table(self):
         with sqlite3.connect(self.path) as connection:
             cursor = connection.cursor()
+
+            cursor.execute("""
+                          CREATE TABLE IF NOT EXISTS users_id  (
+                              id INTEGER PRIMARY KEY AUTOINCREMENT,
+                              user_id INTEGER
+                          )
+                      """)
+
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS rewiews (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,

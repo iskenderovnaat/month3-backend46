@@ -1,4 +1,5 @@
 from aiogram import Router,types
+from aiogram.filters.command import Command
 
 other_messages = Router()
 
